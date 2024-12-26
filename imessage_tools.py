@@ -19,8 +19,6 @@ def read_messages(db_location, n=10, self_number='Me', other_number=None, human_
     if n is not None:
         query += f" ORDER BY message.date DESC LIMIT {n}"
     
-        
-
     results = cursor.execute(query).fetchall()
     messages = []
 
