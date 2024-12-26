@@ -12,6 +12,8 @@ This project uses Python and several libraries to:
 
 The final output is a visually appealing graph representing the connections between words, symbolizing the emotional journey and shared communication between two people.
 
+![Image](figures/path-to-love.png)
+
 ## Installation
 To run the project locally, you'll need Python 3 and the following libraries:
 - `imessage-tools`
