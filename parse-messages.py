@@ -4,7 +4,7 @@ import secret
 
 db = "data/chat.db"
 number = secret.number
-messages = read_messages(db, 3000, 'Me', number, True)
+messages = read_messages(db, None, 'Me', number, True)
 headers = list(messages[0].keys())
 
 with open('messages.csv', 'w', newline='') as csvfile:

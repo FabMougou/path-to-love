@@ -14,6 +14,7 @@ slangThreshold = 2
 
 
 df = pd.read_csv('messages.csv')
+print(df.shape)
 # print(df['body'])
 words = {}
 print("Started running")
@@ -119,24 +120,25 @@ def adj_matrix_co_occurrence_shortest_path(end_node):
 
     degrees = dict(G.degree(G.nodes()))
     
-    # Perform clustering using the Girvan-Newman algorithm
-    comp = girvan_newman(G)
-    threshold = 50  # Stop when number of communities is greater than threshold
-    # Print intermediate results to debug
-    for communities in comp:
-        # print(f"Number of communities: {len(communities)}")
-        if len(communities) > threshold:
-            clusters = communities
-            break
-    if clusters is None:
-        clusters = [set(G.nodes())]
+    # # Perform clustering using the Girvan-Newman algorithm
+    # comp = girvan_newman(G)
+    # threshold = 50  # Stop when number of communities is greater than threshold
+    # # Print intermediate results to debug
+    # for communities in comp:
+    #     # print(f"Number of communities: {len(communities)}")
+    #     if len(communities) > threshold:
+    #         clusters = communities
+    #         break
+    # if clusters is None:
+    #     clusters = [set(G.nodes())]
         
-    # Assign colors to clusters
-    color_map = {}
-    colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink', 'brown', 'grey', 'cyan']
-    for i, cluster in enumerate(clusters):
-        for node in cluster:
-            color_map[node] = colors[i % len(colors)]
+    # # Assign colors to clusters
+    # color_map = {}
+    # colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink', 'brown', 'grey', 'cyan']
+    # for i, cluster in enumerate(clusters):
+    #     for node in cluster:
+    #         color_map[node] = colors[i % len(colors)]
+    
 
     # Create figure and subplots
     fig, axes = plt.subplots(1, 2, figsize=(16, 8))  # 1 row, 2 columns of subplots
@@ -150,21 +152,23 @@ def adj_matrix_co_occurrence_shortest_path(end_node):
     for node, degree in degrees.items():
         if degree == 0:
             G.remove_node(node)
-        pos1[node] = (np.random.uniform(-1, 1), np.random.uniform(-1, 1))
-        if node == end_node:
-            pos1[node] = (0, 1.2)
+        # pos1[node] = (np.random.uniform(-1, 1), np.random.uniform(-1, 1))
+        # if node == end_node:
+        #     pos1[node] = (0, 1.2)
 
     degrees = dict(G.degree(G.nodes()))
-    node_size = [degrees[n] * 10 for n in G.nodes()]
-    node_colors = ['blue'] * len(G.nodes())  # All nodes blue
+    # node_size = [degrees[n] * 10 for n in G.nodes()]
+    # node_colors = [color_map[node] for node in G.nodes()]
+    
+    # node_colors = ['blue'] * len(G.nodes())  # All nodes blue
     nx.draw(
         G,
         pos1,
         ax=ax1,  # Specify which axes to draw on
         with_labels=False,
         font_size=5,
-        node_size=node_size,
-        node_color=node_colors,
+        node_size=5,
+        node_color='red',
         edge_color='grey',
         alpha=0.9,
     )
@@ -180,18 +184,15 @@ def adj_matrix_co_occurrence_shortest_path(end_node):
         ax=ax2,  # Specify which axes to draw on
         with_labels=False,
         font_size=5,
-        node_size=node_size,
-        node_color=node_colors,
-        edge_color='grey',
-        alpha=0.9,
+        node_size=5,
+        node_color='red',
+        edge_color=(0.5, 0.5, 0.5, 0.5),
+        alpha=0.8,
     )
 
     # Adjust layout and show plot
     plt.tight_layout()
     plt.show()
-
-
-
   
 
 def adj_matrix_dendogram():
@@ -205,6 +206,28 @@ def adj_matrix_dendogram():
     plt.xlabel("Words")
     plt.ylabel("Distance")
     plt.show()
+    
+    
+    
+def longest_path(G):
+    # Compute the shortest path lengths between all pairs of nodes
+    all_pairs_lengths = dict(nx.all_pairs_dijkstra_path_length(G))
+
+    # Find the maximum path length
+    max_length = 0
+    longest_path = None
+    for source, lengths in all_pairs_lengths.items():
+        for target, length in lengths.items():
+            if length > max_length:
+                max_length = length
+                longest_path = (source, target)
+
+    # Get the actual longest path
+    if longest_path:
+        path = nx.dijkstra_path(G, source=longest_path[0], target=longest_path[1])
+        return path, max_length
+    else:
+        return None, 0
 
 
 def adj_matrix_co_occurrence():
@@ -229,34 +252,36 @@ def adj_matrix_co_occurrence():
     node_size = [degrees[n] * 10 for n in G.nodes()]
    
    
-    comp = girvan_newman(G)
-    threshold = 20  # Stop when number of communities is greater than threshold
-    # Print intermediate results to debug
-    for communities in comp:
-        print(f"Number of communities: {len(communities)}")
-        if len(communities) > threshold:
-            clusters = communities
-            break
-    if clusters is None:
-        clusters = [set(G.nodes())]
+    # comp = girvan_newman(G)
+    # threshold = 20  # Stop when number of communities is greater than threshold
+    # # Print intermediate results to debug
+    # for communities in comp:
+    #     print(f"Number of communities: {len(communities)}")
+    #     if len(communities) > threshold:
+    #         clusters = communities
+    #         break
+    # if clusters is None:
+    #     clusters = [set(G.nodes())]
         
-    # Assign colors to clusters
-    color_map = {}
-    colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink', 'brown', 'grey', 'cyan']
-    for i, cluster in enumerate(clusters):
-        for node in cluster:
-            color_map[node] = colors[i % len(colors)]
+    # # Assign colors to clusters
+    # color_map = {}
+    # colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink', 'brown', 'grey', 'cyan']
+    # for i, cluster in enumerate(clusters):
+    #     for node in cluster:
+    #         color_map[node] = colors[i % len(colors)]
 
     # Draw the graph with Kamada-Kawai layout and color-coded clusters
     plt.figure(figsize=(10, 8))
     pos = nx.kamada_kawai_layout(G)
     
+    print(longest_path(G))
+    
     for node, degree in degrees.items():
         if degree == 0:
             pos[node] = (np.random.uniform(-1, 1), np.random.uniform(-1, 1))  # Random position away from the center
 
-    node_colors = [color_map[node] for node in G.nodes()]
-    nx.draw(G, pos, with_labels=True, font_size=5, node_size=80, node_color=node_colors, edge_color='grey', alpha=0.5)
+    # node_colors = [color_map[node] for node in G.nodes()]
+    nx.draw(G, pos, with_labels=True, font_size=5, node_size=80, node_color='red', edge_color='grey', alpha=0.5)
     plt.title("Word Co-occurrence Graph - Kamada-Kawai Layout with Clusters")
     plt.show()
     
