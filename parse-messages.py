@@ -2,7 +2,7 @@ from imessage_tools import read_messages
 import csv
 import secret
 
-db = "data/chat.db"
+db = secret.db
 number = secret.number
 messages = read_messages(db, None, 'Me', number, True)
 headers = list(messages[0].keys())
